@@ -50,17 +50,10 @@ if __name__ == '__main__':
         .select(from_json("value", tweet_schema).alias("tweet")) \
         .select("tweet.*") \
         .withColumn("Score", score_cal('tweet')) \
-        .withColumn("Creation_date", cov_date('Creation_date'))
+        .withColumn("Creation_date", cov_date('Creation_date'))\
+        .groupBy("Score").count()
 
-    df_stream = df.groupBy("Score").count()
-
-    # query = df \
-    #     .writeStream \
-    #     .format("console") \
-    #     .outputMode("append").trigger(processingTime='5 seconds') \
-    #     .start()
-
-    stream = df_stream.writeStream \
+    stream = df.writeStream \
         .format("memory") \
         .outputMode("update") \
         .queryName("sentiment") \
@@ -72,13 +65,11 @@ if __name__ == '__main__':
 
 
     def animate(i):
-        print(f"Stream plot ran {i} times")
-        data = spark.sql("select Score, count from sentiment")
-        x = data.toPandas()['Score'].values.tolist()
-        y = data.toPandas()['count'].values.tolist()
+        x = df.toPandas()['Score'].values.tolist()
+        y = df.toPandas()['count'].values.tolist()
         ax1.bar(x, y)
 
-    ani = FuncAnimation(fig, animate, interval=10000)
+    ani = FuncAnimation(fig, animate, interval=100000)
     plt.show()
 
     stream.awaitTermination()
