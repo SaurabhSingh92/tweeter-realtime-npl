@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col, udf
-from pyspark.sql.types import StructType, IntegerType, StringType, DateType, TimestampType
+from pyspark.sql.functions import from_json, udf
+from pyspark.sql.types import StructType, StringType
 from nltk.sentiment import SentimentIntensityAnalyzer
 from datetime import datetime
 import matplotlib.pyplot as plt
